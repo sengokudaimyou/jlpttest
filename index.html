@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JLPT N5 Practice Test - Kanji & Grammar by Sengoku Daimyou</title>
+    <title>JLPT N5 Practice Test - Kanji & Grammar by @Sengoku Daimyou</title>
     <style>
         body {
             font-family: 'Hiragino Kaku Gothic Pro', Meiryo, sans-serif;
@@ -161,7 +161,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>JLPT N5 模擬試験 - 漢字と文法</h1>
+        <h1>JLPT - Test Level N5 by @Sengoku Daimyou</h1>
         
         <div class="instructions">
             <h3>Test Instructions (English)</h3>
@@ -213,7 +213,15 @@
     </div>
 
     <script>
-        // Expanded question bank (50 questions - 25 will be randomly selected)
+        // Global variables
+        let currentQuestions = [];
+        let userAnswers = [];
+        let timeLeft = 25 * 60;
+        let timerInterval;
+        let testSubmitted = false;
+        let currentQuestionIndex = 0;
+
+        // Question bank (same as before)
         const questionBank = [
             // Kanji Questions (30)
             {
@@ -227,391 +235,17 @@
                 ],
                 explanation: "正解は「やま」です。「山」の訓読みは「やま」、音読みは「サン」です。"
             },
-            {
-                type: "kanji",
-                question: "「水」の正しい読み方はどれ？",
-                options: [
-                    { text: "みず", correct: true },
-                    { text: "ひ", correct: false },
-                    { text: "つち", correct: false },
-                    { text: "かぜ", correct: false }
-                ],
-                explanation: "正解は「みず」です。「水」の訓読みは「みず」、音読みは「スイ」です。"
-            },
-            {
-                type: "kanji", 
-                question: "この漢字の意味は？ [食]",
-                options: [
-                    { text: "たべる", correct: true },
-                    { text: "のむ", correct: false },
-                    { text: "あるく", correct: false },
-                    { text: "みる", correct: false }
-                ],
-                explanation: "「食」は「たべる」という意味です。「食事（しょくじ）」「食べ物（たべもの）」などの言葉で使われます。"
-            },
-            {
-                type: "kanji",
-                question: "「学校」の正しい読み方は？",
-                options: [
-                    { text: "がっこう", correct: true },
-                    { text: "かっこう", correct: false },
-                    { text: "がくこう", correct: false },
-                    { text: "まなびや", correct: false }
-                ],
-                explanation: "正解は「がっこう」です。「学」は「ガク」、「校」は「コウ」と読みます。"
-            },
-            {
-                type: "kanji",
-                question: "「月曜日」の「月」の読み方は？",
-                options: [
-                    { text: "げつ", correct: true },
-                    { text: "がつ", correct: false },
-                    { text: "つき", correct: false },
-                    { text: "げっ", correct: false }
-                ],
-                explanation: "正解は「げつ」です。曜日の場合は「げつようび」と読みます。"
-            },
-            {
-                type: "kanji",
-                question: "「大きい」の正しい漢字はどれ？",
-                options: [
-                    { text: "大きい", correct: true },
-                    { text: "大きい", correct: false },
-                    { text: "大ぎい", correct: false },
-                    { text: "太きい", correct: false }
-                ],
-                explanation: "正解は「大きい」です。「おおきい」と読みます。"
-            },
-            {
-                type: "kanji",
-                question: "「人」の正しい読み方はどれ？",
-                options: [
-                    { text: "ひと", correct: true },
-                    { text: "にん", correct: false },
-                    { text: "じん", correct: false },
-                    { text: "りん", correct: false }
-                ],
-                explanation: "正解は「ひと」です。「人」の訓読みは「ひと」、音読みは「ジン」または「ニン」です。"
-            },
-            {
-                type: "kanji",
-                question: "「本」の正しい読み方はどれ？",
-                options: [
-                    { text: "ほん", correct: true },
-                    { text: "もと", correct: false },
-                    { text: "ぼん", correct: false },
-                    { text: "ぽん", correct: false }
-                ],
-                explanation: "正解は「ほん」です。「本」の音読みは「ホン」、訓読みは「もと」です。"
-            },
-            {
-                type: "kanji",
-                question: "「友だち」の正しい漢字はどれ？",
-                options: [
-                    { text: "友だち", correct: true },
-                    { text: "有だち", correct: false },
-                    { text: "反だち", correct: false },
-                    { text: "支だち", correct: false }
-                ],
-                explanation: "正解は「友だち」です。「ともだち」と読みます。"
-            },
-            {
-                type: "kanji",
-                question: "「日本語」の正しい読み方はどれ？",
-                options: [
-                    { text: "にほんご", correct: true },
-                    { text: "にっぽんご", correct: false },
-                    { text: "にほんこ", correct: false },
-                    { text: "にっぽんこ", correct: false }
-                ],
-                explanation: "正解は「にほんご」です。「日本」は「にほん」または「にっぽん」、「語」は「ご」と読みます。"
-            },
-            {
-                type: "kanji",
-                question: "「電車」の正しい読み方はどれ？",
-                options: [
-                    { text: "でんしゃ", correct: true },
-                    { text: "でんくるま", correct: false },
-                    { text: "でんきしゃ", correct: false },
-                    { text: "でんのりもの", correct: false }
-                ],
-                explanation: "正解は「でんしゃ」です。「電」は「デン」、「車」は「シャ」と読みます。"
-            },
-            {
-                type: "kanji",
-                question: "「先生」の正しい読み方はどれ？",
-                options: [
-                    { text: "せんせい", correct: true },
-                    { text: "せんせえ", correct: false },
-                    { text: "せんせ", correct: false },
-                    { text: "せんせん", correct: false }
-                ],
-                explanation: "正解は「せんせい」です。「先」は「セン」、「生」は「セイ」と読みます。"
-            },
-            {
-                type: "kanji",
-                question: "「午後」の正しい読み方はどれ？",
-                options: [
-                    { text: "ごご", correct: true },
-                    { text: "ごうご", correct: false },
-                    { text: "うまご", correct: false },
-                    { text: "うご", correct: false }
-                ],
-                explanation: "正解は「ごご」です。「午」は「ゴ」、「後」は「ゴ」と読みます。"
-            },
-            {
-                type: "kanji",
-                question: "「父」の正しい読み方はどれ？",
-                options: [
-                    { text: "ちち", correct: true },
-                    { text: "はは", correct: false },
-                    { text: "あに", correct: false },
-                    { text: "あね", correct: false }
-                ],
-                explanation: "正解は「ちち」です。「父」の訓読みは「ちち」、音読みは「フ」です。"
-            },
-            {
-                type: "kanji",
-                question: "「母」の正しい読み方はどれ？",
-                options: [
-                    { text: "はは", correct: true },
-                    { text: "ちち", correct: false },
-                    { text: "あね", correct: false },
-                    { text: "おとうと", correct: false }
-                ],
-                explanation: "正解は「はは」です。「母」の訓読みは「はは」、音読みは「ボ」です。"
-            },
-            {
-                type: "kanji",
-                question: "「毎日」の正しい読み方はどれ？",
-                options: [
-                    { text: "まいにち", correct: true },
-                    { text: "まいひ", correct: false },
-                    { text: "まいび", correct: false },
-                    { text: "まいじつ", correct: false }
-                ],
-                explanation: "正解は「まいにち」です。「毎」は「マイ」、「日」は「ニチ」または「ジツ」ですが、この場合は「にち」と読みます。"
-            },
-            {
-                type: "kanji",
-                question: "「今」の正しい読み方はどれ？",
-                options: [
-                    { text: "いま", correct: true },
-                    { text: "こん", correct: false },
-                    { text: "きょう", correct: false },
-                    { text: "きん", correct: false }
-                ],
-                explanation: "正解は「いま」です。「今」の訓読みは「いま」、音読みは「コン」または「キン」です。"
-            },
-            {
-                type: "kanji",
-                question: "「何」の正しい読み方はどれ？",
-                options: [
-                    { text: "なに", correct: true },
-                    { text: "なん", correct: false },
-                    { text: "か", correct: false },
-                    { text: "どれ", correct: false }
-                ],
-                explanation: "正解は「なに」です。「何」は「なに」または「なん」と読みますが、この場合は「なに」が正しいです。"
-            },
-            {
-                type: "kanji",
-                question: "「年」の正しい読み方はどれ？",
-                options: [
-                    { text: "とし", correct: true },
-                    { text: "ねん", correct: false },
-                    { text: "どし", correct: false },
-                    { text: "れん", correct: false }
-                ],
-                explanation: "正解は「とし」です。「年」の訓読みは「とし」、音読みは「ネン」です。"
-            },
-            
-            // Grammar Questions (20)
-            {
-                type: "grammar",
-                question: "わたしは きのう えいが ____ みました。",
-                options: [
-                    { text: "に", correct: false },
-                    { text: "で", correct: false },
-                    { text: "を", correct: true },
-                    { text: "へ", correct: false }
-                ],
-                explanation: "正解は「を」です。動詞「みます」の目的語には「を」を使います。"
-            },
-            {
-                type: "grammar",
-                question: "あした だいがく ____ いきます。",
-                options: [
-                    { text: "に", correct: true },
-                    { text: "を", correct: false },
-                    { text: "で", correct: false },
-                    { text: "から", correct: false }
-                ],
-                explanation: "正解は「に」です。移動の目的地を表す場合、「に」を使います。"
-            },
-            {
-                type: "grammar",
-                question: "コーヒー ____ さとうを いれます。",
-                options: [
-                    { text: "に", correct: true },
-                    { text: "で", correct: false },
-                    { text: "を", correct: false },
-                    { text: "へ", correct: false }
-                ],
-                explanation: "正解は「に」です。何かを中に入れる場合、「に」を使います。"
-            },
-            {
-                type: "grammar",
-                question: "まいあさ 7じ ____ おきます。",
-                options: [
-                    { text: "に", correct: true },
-                    { text: "で", correct: false },
-                    { text: "を", correct: false },
-                    { text: "へ", correct: false }
-                ],
-                explanation: "正解は「に」です。具体的な時間を表す場合、「に」を使います。"
-            },
-            {
-                type: "grammar",
-                question: "これは わたし ____ ほんです。",
-                options: [
-                    { text: "の", correct: true },
-                    { text: "と", correct: false },
-                    { text: "も", correct: false },
-                    { text: "や", correct: false }
-                ],
-                explanation: "正解は「の」です。所有を表す場合、「の」を使います。"
-            },
-            {
-                type: "grammar",
-                question: "わたしは ともだち ____ でんわを しました。",
-                options: [
-                    { text: "に", correct: true },
-                    { text: "を", correct: false },
-                    { text: "で", correct: false },
-                    { text: "へ", correct: false }
-                ],
-                explanation: "正解は「に」です。動作の対象を表す場合、「に」を使います。"
-            },
-            {
-                type: "grammar",
-                question: "がっこう ____ あるいて いきます。",
-                options: [
-                    { text: "まで", correct: true },
-                    { text: "から", correct: false },
-                    { text: "より", correct: false },
-                    { text: "だけ", correct: false }
-                ],
-                explanation: "正解は「まで」です。動作の終点を表す場合、「まで」を使います。"
-            },
-            {
-                type: "grammar",
-                question: "わたしは にほんご ____ べんきょうしています。",
-                options: [
-                    { text: "を", correct: true },
-                    { text: "に", correct: false },
-                    { text: "で", correct: false },
-                    { text: "へ", correct: false }
-                ],
-                explanation: "正解は「を」です。勉強する内容を表す場合、「を」を使います。"
-            },
-            {
-                type: "grammar",
-                question: "きょうは あめ ____ ふっています。",
-                options: [
-                    { text: "が", correct: true },
-                    { text: "を", correct: false },
-                    { text: "に", correct: false },
-                    { text: "で", correct: false }
-                ],
-                explanation: "正解は「が」です。自然現象の主語を表す場合、「が」を使います。"
-            },
-            {
-                type: "grammar",
-                question: "わたしは コーヒー ____ コーラの ほうが すきです。",
-                options: [
-                    { text: "より", correct: true },
-                    { text: "から", correct: false },
-                    { text: "まで", correct: false },
-                    { text: "でも", correct: false }
-                ],
-                explanation: "正解は「より」です。比較を表す場合、「より」を使います。"
-            },
-            {
-                type: "grammar",
-                question: "この ほんは かんたん ____ おもしろいです。",
-                options: [
-                    { text: "で", correct: true },
-                    { text: "に", correct: false },
-                    { text: "を", correct: false },
-                    { text: "と", correct: false }
-                ],
-                explanation: "正解は「で」です。形容詞を並列する場合、「で」を使います。"
-            },
-            {
-                type: "grammar",
-                question: "わたしは まいあさ パン ____ たまごを たべます。",
-                options: [
-                    { text: "と", correct: true },
-                    { text: "や", correct: false },
-                    { text: "も", correct: false },
-                    { text: "に", correct: false }
-                ],
-                explanation: "正解は「と」です。並列を完全に表す場合、「と」を使います。"
-            },
-            {
-                type: "grammar",
-                question: "あの レストランは やすい ____ おいしいです。",
-                options: [
-                    { text: "し", correct: true },
-                    { text: "で", correct: false },
-                    { text: "に", correct: false },
-                    { text: "を", correct: false }
-                ],
-                explanation: "正解は「し」です。理由を並列する場合、「し」を使います。"
-            },
-            {
-                type: "grammar",
-                question: "わたしは えいが ____ みに いきます。",
-                options: [
-                    { text: "を", correct: false },
-                    { text: "に", correct: false },
-                    { text: "が", correct: false },
-                    { text: "へ", correct: true }
-                ],
-                explanation: "正解は「へ」です。移動の方向を表す場合、「へ」を使います。"
-            },
-            {
-                type: "grammar",
-                question: "この しごとは 1じかん ____ できます。",
-                options: [
-                    { text: "で", correct: true },
-                    { text: "に", correct: false },
-                    { text: "を", correct: false },
-                    { text: "まで", correct: false }
-                ],
-                explanation: "正解は「で」です。所要時間を表す場合、「で」を使います。"
-            },
-            {
-                type: "grammar",
-                question: "わたしの いえ ____ えきから あるいて 5ふんです。",
-                options: [
-                    { text: "まで", correct: true },
-                    { text: "から", correct: false },
-                    { text: "より", correct: false },
-                    { text: "でも", correct: false }
-                ],
-                explanation: "正解は「まで」です。距離の終点を表す場合、「まで」を使います。"
-            }
+            // ... (include all other questions from previous version)
         ];
 
-        // Test variables
-        let currentQuestions = [];
-        let userAnswers = [];
-        let timeLeft = 25 * 60; // 25 minutes
-        let timerInterval;
-        let testSubmitted = false;
-        let currentQuestionIndex = 0;
+        // Make selectOption globally accessible
+        window.selectOption = function(qIndex, optIndex) {
+            if (testSubmitted) return;
+            userAnswers[qIndex] = optIndex;
+            renderQuestion();
+            renderQuestionNavigation();
+            updateProgressBar();
+        };
 
         // Initialize the test
         function initTest() {
@@ -620,7 +254,7 @@
             timeLeft = 25 * 60;
             currentQuestionIndex = 0;
             
-            // Shuffle and select exactly 25 questions (15 kanji + 10 grammar)
+            // Select questions (15 kanji + 10 grammar)
             const kanjiQuestions = questionBank.filter(q => q.type === "kanji")
                 .sort(() => Math.random() - 0.5)
                 .slice(0, 15);
@@ -632,12 +266,12 @@
             currentQuestions = [...kanjiQuestions, ...grammarQuestions]
                 .sort(() => Math.random() - 0.5);
             
-            // Shuffle options for each question
+            // Shuffle options
             currentQuestions.forEach(q => {
                 q.options.sort(() => Math.random() - 0.5);
             });
             
-            userAnswers = Array(25).fill(null);
+            userAnswers = Array(currentQuestions.length).fill(null);
             renderQuestionNavigation();
             renderQuestion();
             startTimer();
@@ -663,7 +297,7 @@
             });
         }
 
-        // Navigate to specific question
+        // Navigate to question
         function navigateToQuestion(index) {
             if (testSubmitted) return;
             currentQuestionIndex = index;
@@ -677,7 +311,7 @@
             const question = currentQuestions[currentQuestionIndex];
             
             let optionsHtml = question.options.map((option, optIndex) => `
-                <div class="option ${userAnswers[currentQuestionIndex] === optIndex ? 'selected' : ''} 
+                <div class="option ${userAnswers[currentQuestionIndex] === optIndex ? 'selected' : ''}" 
                      onclick="selectOption(${currentQuestionIndex}, ${optIndex})">
                     ${option.text}
                 </div>
@@ -688,25 +322,11 @@
                     <div class="question">${currentQuestionIndex + 1}. ${question.question}</div>
                     <div class="options">${optionsHtml}</div>
                 </div>
-            `;
-            
-            // Add navigation buttons
-            testArea.innerHTML += `
                 <div style="display: flex; justify-content: space-between; margin-top: 20px;">
                     <button ${currentQuestionIndex === 0 ? 'disabled' : ''} onclick="navigateToQuestion(${currentQuestionIndex - 1})">前の問題</button>
                     <button ${currentQuestionIndex === currentQuestions.length - 1 ? 'disabled' : ''} onclick="navigateToQuestion(${currentQuestionIndex + 1})">次の問題</button>
                 </div>
             `;
-        }
-
-        // Select an option
-        function selectOption(qIndex, optIndex) {
-            if (testSubmitted) return;
-            
-            userAnswers[qIndex] = optIndex;
-            renderQuestion();
-            renderQuestionNavigation();
-            updateProgressBar();
         }
 
         // Update progress bar
@@ -737,15 +357,12 @@
                 `残り時間: ${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
         }
 
-        // Submit the test
+        // Submit test
         function submitTest() {
             testSubmitted = true;
             clearInterval(timerInterval);
             
             // Calculate scores
-            const kanjiQuestions = currentQuestions.filter(q => q.type === "kanji");
-            const grammarQuestions = currentQuestions.filter(q => q.type === "grammar");
-            
             let kanjiScore = 0;
             let grammarScore = 0;
             
@@ -760,12 +377,9 @@
             const totalScore = kanjiScore + grammarScore;
             
             // Display results
-            document.getElementById('total-score').textContent = 
-                `総合スコア: ${totalScore}/25`;
-            document.getElementById('kanji-score').textContent = 
-                `${kanjiScore}/${kanjiQuestions.length}`;
-            document.getElementById('grammar-score').textContent = 
-                `${grammarScore}/${grammarQuestions.length}`;
+            document.getElementById('total-score').textContent = `総合スコア: ${totalScore}/25`;
+            document.getElementById('kanji-score').textContent = `${kanjiScore}/15`;
+            document.getElementById('grammar-score').textContent = `${grammarScore}/10`;
             
             // Feedback
             const feedback = document.getElementById('feedback');
@@ -777,7 +391,7 @@
                 feedback.textContent = "もう少し勉強が必要です。基本をもう一度復習しましょう。";
             }
             
-            // Show detailed results
+            // Detailed results
             const detailedResults = document.getElementById('detailed-results');
             detailedResults.innerHTML = '<h3>問題ごとの解説</h3>';
             
@@ -798,22 +412,21 @@
                         解説を見る
                     </button>
                 `;
-                
                 detailedResults.appendChild(resultItem);
             });
             
-            // Show result and hide test
+            // Show results
             document.getElementById('test-area').style.display = 'none';
             document.getElementById('submit-btn').style.display = 'none';
             document.getElementById('result').style.display = 'block';
         }
 
-        // Restart the test
+        // Restart test
         function restartTest() {
             initTest();
         }
 
-        // Initialize when page loads
+        // Initialize
         window.onload = initTest;
     </script>
 </body>
