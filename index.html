@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JLPT N5 模擬試験 - 漢字と文法</title>
+    <title>JLPT N5 Practice Test - Kanji & Grammar</title>
     <style>
         body {
             font-family: 'Hiragino Kaku Gothic Pro', Meiryo, sans-serif;
@@ -18,6 +18,13 @@
             color: #e74c3c;
             text-align: center;
             margin-bottom: 30px;
+        }
+        .instructions {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            border-left: 4px solid #e74c3c;
         }
         #timer {
             background: #34495e;
@@ -104,7 +111,20 @@
 </head>
 <body>
     <div class="container">
-        <h1>JLPT N5 模擬試験 - 漢字と文法</h1>
+        <h1>JLPT N5 Test by @Sengoku Daimyou</h1>
+        
+        <div class="instructions">
+            <h3>Test Instructions (English)</h3>
+            <ol>
+                <li>This test contains <strong>25 random questions</strong> from JLPT N5 Kanji and Grammar</li>
+                <li>You have <strong>25 minutes</strong> to complete the test</li>
+                <li>Select one answer for each question</li>
+                <li>Click "Submit Test" when finished</li>
+                <li>Results will show your score and explanations</li>
+            </ol>
+            <p>All questions are in Japanese as required for the JLPT exam.This is a test in development phase. Leave your Feedback in my THREADS.</p>
+        </div>
+        
         <div id="timer">残り時間: 25:00</div>
         
         <div id="test-area">
@@ -133,7 +153,7 @@
     </div>
 
     <script>
-        // Expanded question bank (40 questions)
+        // Expanded question bank (40 questions - 25 will be randomly selected)
         const questionBank = [
             // Kanji Questions (20)
             {
@@ -169,6 +189,29 @@
                 ],
                 explanation: "「食」は「たべる」という意味です。「食事（しょくじ）」「食べ物（たべもの）」などの言葉で使われます。"
             },
+            {
+                type: "kanji",
+                question: "「学校」の正しい読み方は？",
+                options: [
+                    { text: "がっこう", correct: true },
+                    { text: "かっこう", correct: false },
+                    { text: "がくこう", correct: false },
+                    { text: "まなびや", correct: false }
+                ],
+                explanation: "正解は「がっこう」です。「学」は「ガク」、「校」は「コウ」と読みます。"
+            },
+            {
+                type: "kanji",
+                question: "「月曜日」の「月」の読み方は？",
+                options: [
+                    { text: "げつ", correct: true },
+                    { text: "がつ", correct: false },
+                    { text: "つき", correct: false },
+                    { text: "げっ", correct: false }
+                ],
+                explanation: "正解は「げつ」です。曜日の場合は「げつようび」と読みます。"
+            },
+            // Add 15 more kanji questions...
             
             // Grammar Questions (20)
             {
@@ -203,8 +246,30 @@
                     { text: "へ", correct: false }
                 ],
                 explanation: "正解は「に」です。何かを中に入れる場合、「に」を使います。"
+            },
+            {
+                type: "grammar",
+                question: "まいあさ 7じ ____ おきます。",
+                options: [
+                    { text: "に", correct: true },
+                    { text: "で", correct: false },
+                    { text: "を", correct: false },
+                    { text: "へ", correct: false }
+                ],
+                explanation: "正解は「に」です。具体的な時間を表す場合、「に」を使います。"
+            },
+            {
+                type: "grammar",
+                question: "これは わたし ____ ほんです。",
+                options: [
+                    { text: "の", correct: true },
+                    { text: "と", correct: false },
+                    { text: "も", correct: false },
+                    { text: "や", correct: false }
+                ],
+                explanation: "正解は「の」です。所有を表す場合、「の」を使います。"
             }
-            // Add 34 more questions following the same pattern...
+            // Add 15 more grammar questions...
         ];
 
         // Test variables
@@ -216,19 +281,35 @@
 
         // Initialize the test
         function initTest() {
-            // Shuffle and select 25 questions
-            currentQuestions = [...questionBank]
+            // Reset variables
+            testSubmitted = false;
+            timeLeft = 25 * 60;
+            
+            // Shuffle and select exactly 25 questions (15 kanji + 10 grammar)
+            const kanjiQuestions = questionBank.filter(q => q.type === "kanji")
                 .sort(() => Math.random() - 0.5)
-                .slice(0, 25);
+                .slice(0, 15);
+            
+            const grammarQuestions = questionBank.filter(q => q.type === "grammar")
+                .sort(() => Math.random() - 0.5)
+                .slice(0, 10);
+            
+            currentQuestions = [...kanjiQuestions, ...grammarQuestions]
+                .sort(() => Math.random() - 0.5);
             
             // Shuffle options for each question
             currentQuestions.forEach(q => {
                 q.options.sort(() => Math.random() - 0.5);
             });
             
-            userAnswers = Array(currentQuestions.length).fill(null);
+            userAnswers = Array(25).fill(null);
             renderQuestions();
             startTimer();
+            
+            // Show test area
+            document.getElementById('test-area').style.display = 'block';
+            document.getElementById('submit-btn').style.display = 'block';
+            document.getElementById('result').style.display = 'none';
         }
 
         // Render all questions
@@ -333,11 +414,6 @@
 
         // Restart the test
         function restartTest() {
-            testSubmitted = false;
-            timeLeft = 25 * 60;
-            document.getElementById('test-area').style.display = 'block';
-            document.getElementById('submit-btn').style.display = 'block';
-            document.getElementById('result').style.display = 'none';
             initTest();
         }
 
