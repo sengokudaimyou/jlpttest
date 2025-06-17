@@ -1,433 +1,747 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JLPT N5 Practice Test - Kanji & Grammar by @Sengoku Daimyou</title>
+    <title>JLPT N5 Practice Test - Kanji & Grammar</title>
     <style>
+        :root {
+            --primary-color: #e74c3c;
+            --secondary-color: #2c3e50;
+            --light-color: #ecf0f1;
+            --dark-color: #34495e;
+            --success-color: #2ecc71;
+            --warning-color: #f39c12;
+            --danger-color: #e74c3c;
+        }
+        
         body {
-            font-family: 'Hiragino Kaku Gothic Pro', Meiryo, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             line-height: 1.6;
-            color: #333;
+            color: var(--dark-color);
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .container {
             max-width: 800px;
             margin: 0 auto;
             padding: 20px;
-            background-color: #f9f9f9;
-        }
-        h1 {
-            color: #e74c3c;
-            text-align: center;
+            background-color: white;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            margin-top: 30px;
             margin-bottom: 30px;
         }
-        .instructions {
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 5px;
-            margin-bottom: 20px;
-            border-left: 4px solid #e74c3c;
-        }
-        #timer {
-            background: #34495e;
-            color: white;
-            padding: 10px;
+        
+        header {
             text-align: center;
-            margin-bottom: 20px;
-            border-radius: 5px;
-            font-weight: bold;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
         }
-        .question-container {
-            background: white;
-            padding: 20px;
-            margin-bottom: 20px;
-            border-radius: 5px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        
+        h1 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
         }
-        .question {
-            font-size: 1.2em;
-            margin-bottom: 15px;
-            font-weight: bold;
-        }
-        .options {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 10px;
-        }
-        .option {
-            padding: 12px 15px;
-            border: 2px solid #ddd;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        .option:hover {
-            background: #f0f0f0;
-        }
-        .option.selected {
-            border-color: #3498db;
-            background: #eaf2f8;
-        }
-        .option.correct {
-            border-color: #2ecc71;
-            background: #e8f8f0;
-        }
-        .option.incorrect {
-            border-color: #e74c3c;
-            background: #fdedec;
-        }
-        button {
-            background: #e74c3c;
-            color: white;
-            border: none;
-            padding: 12px 20px;
-            font-size: 1em;
-            border-radius: 5px;
-            cursor: pointer;
-            display: block;
-            margin: 20px auto;
-            transition: background 0.3s;
-        }
-        button:hover {
-            background: #c0392b;
-        }
-        button:disabled {
-            background: #95a5a6;
-            cursor: not-allowed;
-        }
-        #result {
-            background: #fff8e1;
-            padding: 25px;
-            border-radius: 5px;
-            margin-top: 30px;
-            display: none;
-        }
-        .score-display {
-            font-size: 1.5em;
-            text-align: center;
-            margin: 20px 0;
-        }
-        .category {
+        
+        .test-info {
             display: flex;
             justify-content: space-between;
-            margin: 15px 0;
-            padding-bottom: 10px;
-            border-bottom: 1px dashed #ccc;
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
         }
-        .explanation {
-            background: #f5f5f5;
+        
+        .timer {
+            font-weight: bold;
+            color: var(--warning-color);
+        }
+        
+        .question {
+            margin-bottom: 25px;
             padding: 15px;
-            margin-top: 15px;
+            border: 1px solid #eee;
             border-radius: 5px;
-            display: none;
+            background-color: #f9f9f9;
         }
-        .progress-container {
-            width: 100%;
-            background-color: #ecf0f1;
-            border-radius: 5px;
-            margin-bottom: 20px;
+        
+        .question-number {
+            font-weight: bold;
+            color: var(--secondary-color);
+            margin-bottom: 10px;
         }
-        .progress-bar {
-            height: 10px;
-            background-color: #3498db;
-            border-radius: 5px;
-            width: 0%;
-            transition: width 0.3s;
+        
+        .question-text {
+            margin-bottom: 15px;
+            font-size: 1.1em;
         }
-        .question-navigation {
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 5px;
-            margin-bottom: 20px;
+        
+        .options {
+            margin-left: 20px;
         }
-        .nav-btn {
-            width: 35px;
-            height: 35px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
+        
+        .option {
+            margin-bottom: 10px;
             display: flex;
             align-items: center;
-            justify-content: center;
-            cursor: pointer;
         }
-        .nav-btn.answered {
-            background-color: #3498db;
+        
+        .option input {
+            margin-right: 10px;
+        }
+        
+        .btn {
+            display: inline-block;
+            background-color: var(--primary-color);
             color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s;
         }
-        .nav-btn.current {
-            border: 2px solid #e74c3c;
+        
+        .btn:hover {
+            background-color: #c0392b;
+        }
+        
+        .btn-submit {
+            display: block;
+            margin: 30px auto;
+            font-size: 1.2em;
+            padding: 12px 30px;
+        }
+        
+        .results {
+            display: none;
+            text-align: center;
+            padding: 30px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        
+        .results h2 {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+        }
+        
+        .score {
+            font-size: 2em;
             font-weight: bold;
+            margin: 20px 0;
+            color: var(--secondary-color);
+        }
+        
+        .feedback {
+            margin-top: 20px;
+            text-align: left;
+        }
+        
+        .feedback-item {
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        
+        .correct {
+            background-color: rgba(46, 204, 113, 0.2);
+            border-left: 4px solid var(--success-color);
+        }
+        
+        .incorrect {
+            background-color: rgba(231, 76, 60, 0.2);
+            border-left: 4px solid var(--danger-color);
+        }
+        
+        .highlight {
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 10px;
+                margin-top: 10px;
+            }
+            
+            .test-info {
+                flex-direction: column;
+                gap: 10px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>JLPT - Test Level N5 by @Sengoku Daimyou</h1>
+        <header>
+            <h1>JLPT N5 Practice Test</h1>
+            <p>Kanji & Grammar - By @sengokudaimyou</p>
+        </header>
         
-        <div class="instructions">
-            <h3>Test Instructions (English)</h3>
-            <ol>
-                <li>This test contains <strong>25 random questions</strong> from JLPT N5 Kanji and Grammar</li>
-                <li>You have <strong>25 minutes</strong> to complete the test</li>
-                <li>Select one answer for each question</li>
-                <li>Click "Submit Test" when finished</li>
-                <li>Results will show your score and explanations</li>
-            </ol>
-            <p>This is a test in development phase. Leave your Feedback in my THREADS.</p>
+        <div class="test-info">
+            <div>Questions: <span id="total-questions">30</span></div>
+            <div>Time remaining: <span class="timer" id="time">15:00</span></div>
         </div>
         
-        <div id="timer">残り時間: 25:00</div>
-        <div class="progress-container">
-            <div class="progress-bar" id="progress-bar"></div>
-        </div>
+        <div id="test-container"></div>
         
-        <div class="question-navigation" id="question-nav"></div>
+        <button id="submit-btn" class="btn btn-submit">Submit Test</button>
         
-        <div id="test-area">
-            <!-- Questions will be inserted here -->
-        </div>
-        
-        <button id="submit-btn" onclick="submitTest()">テストを終了する</button>
-        
-        <div id="result">
-            <h2>テスト結果</h2>
-            <div class="score-display" id="total-score"></div>
+        <div id="results" class="results">
+            <h2>Test Results</h2>
+            <div class="score">Your score: <span id="final-score">0</span>/30</div>
+            <p id="result-message"></p>
             
-            <div class="category">
-                <span>漢字 (15問):</span>
-                <span id="kanji-score"></span>
-            </div>
+            <div class="feedback" id="feedback"></div>
             
-            <div class="category">
-                <span>文法 (10問):</span>
-                <span id="grammar-score"></span>
-            </div>
-            
-            <div id="feedback"></div>
-            
-            <div id="detailed-results">
-                <!-- Detailed results will be inserted here -->
-            </div>
-            
-            <button onclick="restartTest()">もう一度受ける</button>
+            <button id="retry-btn" class="btn">Try Again</button>
         </div>
     </div>
 
     <script>
-        // Global variables
-        let currentQuestions = [];
-        let userAnswers = [];
-        let timeLeft = 25 * 60;
-        let timerInterval;
-        let testSubmitted = false;
-        let currentQuestionIndex = 0;
-
-        // Question bank (same as before)
-        const questionBank = [
-            // Kanji Questions (30)
+        // Question banks
+        const kanjiQuestions = [
             {
-                type: "kanji",
-                question: "この漢字の読み方は？ [山]",
+                question: "What is the correct reading for the kanji '人'?",
                 options: [
-                    { text: "やま", correct: true },
-                    { text: "かわ", correct: false },
-                    { text: "いけ", correct: false },
-                    { text: "うみ", correct: false }
+                    "ひと (hito)",
+                    "いぬ (inu)",
+                    "ねこ (neko)",
+                    "みず (mizu)"
                 ],
-                explanation: "正解は「やま」です。「山」の訓読みは「やま」、音読みは「サン」です。"
+                answer: 0,
+                explanation: "The kanji '人' is read as 'ひと (hito)' and means 'person'."
             },
-            // ... (include all other questions from previous version)
+            {
+                question: "Which kanji means 'mountain'?",
+                options: [
+                    "川",
+                    "山",
+                    "木",
+                    "日"
+                ],
+                answer: 1,
+                explanation: "The kanji '山' means 'mountain' and is read as 'やま (yama)'."
+            },
+            {
+                question: "What is the meaning of the kanji '水'?",
+                options: [
+                    "Fire",
+                    "Water",
+                    "Earth",
+                    "Air"
+                ],
+                answer: 1,
+                explanation: "The kanji '水' means 'water' and is read as 'みず (mizu)'."
+            },
+            {
+                question: "Which kanji represents the number 'one'?",
+                options: [
+                    "二",
+                    "三",
+                    "一",
+                    "十"
+                ],
+                answer: 2,
+                explanation: "The kanji '一' represents the number 'one' and is read as 'いち (ichi)'."
+            },
+            {
+                question: "What is the correct reading for the kanji '日' in '日本'?",
+                options: [
+                    "ひ (hi)",
+                    "に (ni)",
+                    "ほ (ho)",
+                    "ん (n)"
+                ],
+                answer: 1,
+                explanation: "In '日本' (Japan), '日' is read as 'に (ni)' and '本' is read as 'ほん (hon)'."
+            },
+            {
+                question: "Which kanji means 'tree' or 'wood'?",
+                options: [
+                    "林",
+                    "森",
+                    "木",
+                    "花"
+                ],
+                answer: 2,
+                explanation: "The kanji '木' means 'tree' or 'wood' and is read as 'き (ki)'."
+            },
+            {
+                question: "What is the meaning of the kanji '月'?",
+                options: [
+                    "Sun",
+                    "Star",
+                    "Moon",
+                    "Cloud"
+                ],
+                answer: 2,
+                explanation: "The kanji '月' means 'moon' or 'month' and is read as 'つき (tsuki)'."
+            },
+            {
+                question: "Which kanji represents the number 'ten'?",
+                options: [
+                    "千",
+                    "百",
+                    "十",
+                    "万"
+                ],
+                answer: 2,
+                explanation: "The kanji '十' represents the number 'ten' and is read as 'じゅう (juu)'."
+            },
+            {
+                question: "What is the correct reading for the kanji '火'?",
+                options: [
+                    "みず (mizu)",
+                    "かぜ (kaze)",
+                    "ひ (hi)",
+                    "つち (tsuchi)"
+                ],
+                answer: 2,
+                explanation: "The kanji '火' means 'fire' and is read as 'ひ (hi)'."
+            },
+            {
+                question: "Which kanji means 'book' or 'origin'?",
+                options: [
+                    "本",
+                    "冊",
+                    "紙",
+                    "文"
+                ],
+                answer: 0,
+                explanation: "The kanji '本' means 'book' or 'origin' and is read as 'ほん (hon)'."
+            },
+            {
+                question: "What is the meaning of the kanji '川'?",
+                options: [
+                    "Mountain",
+                    "River",
+                    "Road",
+                    "Sea"
+                ],
+                answer: 1,
+                explanation: "The kanji '川' means 'river' and is read as 'かわ (kawa)'."
+            },
+            {
+                question: "Which kanji represents the number 'three'?",
+                options: [
+                    "一",
+                    "二",
+                    "三",
+                    "四"
+                ],
+                answer: 2,
+                explanation: "The kanji '三' represents the number 'three' and is read as 'さん (san)'."
+            },
+            {
+                question: "What is the correct reading for the kanji '金'?",
+                options: [
+                    "ぎん (gin)",
+                    "かね (kane)",
+                    "きん (kin)",
+                    "Both 2 and 3"
+                ],
+                answer: 3,
+                explanation: "The kanji '金' can be read as 'きん (kin)' meaning 'gold' or 'かね (kane)' meaning 'money'."
+            },
+            {
+                question: "Which kanji means 'child'?",
+                options: [
+                    "女",
+                    "男",
+                    "子",
+                    "母"
+                ],
+                answer: 2,
+                explanation: "The kanji '子' means 'child' and is read as 'こ (ko)'."
+            },
+            {
+                question: "What is the meaning of the kanji '口'?",
+                options: [
+                    "Ear",
+                    "Eye",
+                    "Mouth",
+                    "Nose"
+                ],
+                answer: 2,
+                explanation: "The kanji '口' means 'mouth' and is read as 'くち (kuchi)'."
+            }
         ];
 
-        // Make selectOption globally accessible
-        window.selectOption = function(qIndex, optIndex) {
-            if (testSubmitted) return;
-            userAnswers[qIndex] = optIndex;
-            renderQuestion();
-            renderQuestionNavigation();
-            updateProgressBar();
-        };
+        const grammarQuestions = [
+            {
+                question: "Which particle should be used in this sentence: 'わたし___にほんごをべんきょうします'?",
+                options: [
+                    "は (wa)",
+                    "が (ga)",
+                    "を (wo)",
+                    "に (ni)"
+                ],
+                answer: 0,
+                explanation: "The particle 'は' marks the topic of the sentence. Correct sentence: 'わたしはにほんごをべんきょうします' (I study Japanese)."
+            },
+            {
+                question: "Choose the correct negative form: 'たべます' (to eat)",
+                options: [
+                    "たべません",
+                    "たべないです",
+                    "たべなくです",
+                    "たべじゃない"
+                ],
+                answer: 0,
+                explanation: "The polite negative form of 'たべます' is 'たべません'."
+            },
+            {
+                question: "Which is the correct past tense of 'いきます' (to go)?",
+                options: [
+                    "いきました",
+                    "いきでした",
+                    "いきた",
+                    "いって"
+                ],
+                answer: 0,
+                explanation: "The past tense of 'いきます' is 'いきました'."
+            },
+            {
+                question: "Complete the sentence: 'きのう、えいが___みました'",
+                options: [
+                    "は",
+                    "が",
+                    "を",
+                    "に"
+                ],
+                answer: 2,
+                explanation: "The particle 'を' marks the direct object. Correct sentence: 'きのう、えいがをみました' (Yesterday, I watched a movie)."
+            },
+            {
+                question: "Which means 'There is a book'?",
+                options: [
+                    "ほんがあります",
+                    "ほんはあります",
+                    "ほんをあります",
+                    "ほんにあります"
+                ],
+                answer: 0,
+                explanation: "'があります' is used for inanimate objects. 'ほんがあります' means 'There is a book'."
+            },
+            {
+                question: "Choose the correct question: '___ですか' (How much?)",
+                options: [
+                    "どこ",
+                    "いつ",
+                    "いくら",
+                    "どう"
+                ],
+                answer: 2,
+                explanation: "'いくらですか' means 'How much is it?' when asking about price."
+            },
+            {
+                question: "Which is the correct te-form of 'のみます' (to drink)?",
+                options: [
+                    "のんで",
+                    "のみて",
+                    "のって",
+                    "のいて"
+                ],
+                answer: 0,
+                explanation: "The te-form of 'のみます' is 'のんで'."
+            },
+            {
+                question: "Complete the sentence: 'にほんご___はなせます' (I can speak Japanese)",
+                options: [
+                    "は",
+                    "が",
+                    "を",
+                    "に"
+                ],
+                answer: 1,
+                explanation: "The particle 'が' is used with potential verbs. Correct sentence: 'にほんごがはなせます'."
+            },
+            {
+                question: "Which means 'Please give me water'?",
+                options: [
+                    "みずをください",
+                    "みずがあります",
+                    "みずをいます",
+                    "みずをします"
+                ],
+                answer: 0,
+                explanation: "'みずをください' means 'Please give me water'."
+            },
+            {
+                question: "Choose the correct past negative: 'あそびます' (to play)",
+                options: [
+                    "あそびませんでした",
+                    "あそばなかったです",
+                    "あそびないでした",
+                    "あそびじゃなかった"
+                ],
+                answer: 0,
+                explanation: "The polite past negative of 'あそびます' is 'あそびませんでした'."
+            },
+            {
+                question: "Which particle means 'to' or 'toward'?",
+                options: [
+                    "で",
+                    "に",
+                    "へ",
+                    "を"
+                ],
+                answer: 2,
+                explanation: "The particle 'へ' (pronounced 'e') indicates direction meaning 'to' or 'toward'."
+            },
+            {
+                question: "Complete the sentence: 'あした、とうきょう___いきます' (Tomorrow, I will go to Tokyo)",
+                options: [
+                    "は",
+                    "が",
+                    "を",
+                    "に"
+                ],
+                answer: 3,
+                explanation: "The particle 'に' indicates destination. Correct sentence: 'あした、とうきょうにいきます'."
+            },
+            {
+                question: "Which means 'I don't like fish'?",
+                options: [
+                    "さかながすきです",
+                    "さかながすきではありません",
+                    "さかながきらいです",
+                    "Both 2 and 3"
+                ],
+                answer: 3,
+                explanation: "Both 'さかながすきではありません' and 'さかながきらいです' can mean 'I don't like fish', with the latter being stronger ('I dislike fish')."
+            },
+            {
+                question: "Choose the correct counting word for books: '___ほん'",
+                options: [
+                    "いっさつ",
+                    "いちまい",
+                    "いっこ",
+                    "いちだい"
+                ],
+                answer: 0,
+                explanation: "Books are counted with 'さつ'. 'いっさつ' means 'one book'."
+            },
+            {
+                question: "Which is the correct way to say 'Let's eat'?",
+                options: [
+                    "たべましょう",
+                    "たべてください",
+                    "たべます",
+                    "たべたいです"
+                ],
+                answer: 0,
+                explanation: "'たべましょう' is the volitional form meaning 'Let's eat'."
+            }
+        ];
+
+        // Test variables
+        let currentTest = [];
+        let userAnswers = [];
+        let timeLeft = 15 * 60; // 15 minutes in seconds
+        let timerInterval;
+        let testSubmitted = false;
+
+        // DOM elements
+        const testContainer = document.getElementById('test-container');
+        const submitBtn = document.getElementById('submit-btn');
+        const resultsDiv = document.getElementById('results');
+        const finalScoreSpan = document.getElementById('final-score');
+        const resultMessage = document.getElementById('result-message');
+        const feedbackDiv = document.getElementById('feedback');
+        const retryBtn = document.getElementById('retry-btn');
+        const timeDisplay = document.getElementById('time');
 
         // Initialize the test
         function initTest() {
             // Reset variables
+            currentTest = [];
+            userAnswers = [];
             testSubmitted = false;
-            timeLeft = 25 * 60;
-            currentQuestionIndex = 0;
+            timeLeft = 15 * 60;
             
-            // Select questions (15 kanji + 10 grammar)
-            const kanjiQuestions = questionBank.filter(q => q.type === "kanji")
-                .sort(() => Math.random() - 0.5)
-                .slice(0, 15);
+            // Create randomized test (15 kanji + 15 grammar questions)
+            const shuffledKanji = [...kanjiQuestions].sort(() => 0.5 - Math.random()).slice(0, 15);
+            const shuffledGrammar = [...grammarQuestions].sort(() => 0.5 - Math.random()).slice(0, 15);
             
-            const grammarQuestions = questionBank.filter(q => q.type === "grammar")
-                .sort(() => Math.random() - 0.5)
-                .slice(0, 10);
+            currentTest = [...shuffledKanji, ...shuffledGrammar];
             
-            currentQuestions = [...kanjiQuestions, ...grammarQuestions]
-                .sort(() => Math.random() - 0.5);
+            // Shuffle the entire test to mix kanji and grammar questions
+            currentTest = currentTest.sort(() => 0.5 - Math.random());
             
-            // Shuffle options
-            currentQuestions.forEach(q => {
-                q.options.sort(() => Math.random() - 0.5);
-            });
+            // Display test
+            displayTest();
             
-            userAnswers = Array(currentQuestions.length).fill(null);
-            renderQuestionNavigation();
-            renderQuestion();
-            startTimer();
-            updateProgressBar();
-            
-            // Show test area
-            document.getElementById('test-area').style.display = 'block';
-            document.getElementById('submit-btn').style.display = 'block';
-            document.getElementById('result').style.display = 'none';
-        }
-
-        // Render question navigation
-        function renderQuestionNavigation() {
-            const navContainer = document.getElementById('question-nav');
-            navContainer.innerHTML = '';
-            
-            currentQuestions.forEach((_, index) => {
-                const navBtn = document.createElement('div');
-                navBtn.className = `nav-btn ${userAnswers[index] !== null ? 'answered' : ''} ${index === currentQuestionIndex ? 'current' : ''}`;
-                navBtn.textContent = index + 1;
-                navBtn.onclick = () => navigateToQuestion(index);
-                navContainer.appendChild(navBtn);
-            });
-        }
-
-        // Navigate to question
-        function navigateToQuestion(index) {
-            if (testSubmitted) return;
-            currentQuestionIndex = index;
-            renderQuestion();
-            renderQuestionNavigation();
-        }
-
-        // Render current question
-        function renderQuestion() {
-            const testArea = document.getElementById('test-area');
-            const question = currentQuestions[currentQuestionIndex];
-            
-            let optionsHtml = question.options.map((option, optIndex) => `
-                <div class="option ${userAnswers[currentQuestionIndex] === optIndex ? 'selected' : ''}" 
-                     onclick="selectOption(${currentQuestionIndex}, ${optIndex})">
-                    ${option.text}
-                </div>
-            `).join('');
-            
-            testArea.innerHTML = `
-                <div class="question-container">
-                    <div class="question">${currentQuestionIndex + 1}. ${question.question}</div>
-                    <div class="options">${optionsHtml}</div>
-                </div>
-                <div style="display: flex; justify-content: space-between; margin-top: 20px;">
-                    <button ${currentQuestionIndex === 0 ? 'disabled' : ''} onclick="navigateToQuestion(${currentQuestionIndex - 1})">前の問題</button>
-                    <button ${currentQuestionIndex === currentQuestions.length - 1 ? 'disabled' : ''} onclick="navigateToQuestion(${currentQuestionIndex + 1})">次の問題</button>
-                </div>
-            `;
-        }
-
-        // Update progress bar
-        function updateProgressBar() {
-            const answeredCount = userAnswers.filter(answer => answer !== null).length;
-            const progress = (answeredCount / currentQuestions.length) * 100;
-            document.getElementById('progress-bar').style.width = `${progress}%`;
-        }
-
-        // Timer functions
-        function startTimer() {
-            updateTimerDisplay();
-            timerInterval = setInterval(() => {
-                timeLeft--;
-                updateTimerDisplay();
-                
-                if (timeLeft <= 0) {
-                    clearInterval(timerInterval);
-                    submitTest();
-                }
-            }, 1000);
-        }
-
-        function updateTimerDisplay() {
-            const minutes = Math.floor(timeLeft / 60);
-            const seconds = timeLeft % 60;
-            document.getElementById('timer').textContent = 
-                `残り時間: ${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
-        }
-
-        // Submit test
-        function submitTest() {
-            testSubmitted = true;
+            // Start timer
             clearInterval(timerInterval);
+            timerInterval = setInterval(updateTimer, 1000);
             
-            // Calculate scores
-            let kanjiScore = 0;
-            let grammarScore = 0;
+            // Hide results
+            resultsDiv.style.display = 'none';
+            submitBtn.style.display = 'block';
+        }
+
+        // Display the test questions
+        function displayTest() {
+            testContainer.innerHTML = '';
             
-            currentQuestions.forEach((question, index) => {
-                const userAnswer = userAnswers[index];
-                if (userAnswer !== null && question.options[userAnswer].correct) {
-                    if (question.type === "kanji") kanjiScore++;
-                    else grammarScore++;
-                }
+            currentTest.forEach((question, index) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.className = 'question';
+                
+                const questionNumber = document.createElement('div');
+                questionNumber.className = 'question-number';
+                questionNumber.textContent = `Question ${index + 1}`;
+                questionDiv.appendChild(questionNumber);
+                
+                const questionText = document.createElement('div');
+                questionText.className = 'question-text';
+                questionText.textContent = question.question;
+                questionDiv.appendChild(questionText);
+                
+                const optionsDiv = document.createElement('div');
+                optionsDiv.className = 'options';
+                
+                question.options.forEach((option, optionIndex) => {
+                    const optionDiv = document.createElement('div');
+                    optionDiv.className = 'option';
+                    
+                    const input = document.createElement('input');
+                    input.type = 'radio';
+                    input.name = `question-${index}`;
+                    input.id = `question-${index}-option-${optionIndex}`;
+                    input.value = optionIndex;
+                    
+                    // Store answer if already selected
+                    if (userAnswers[index] === optionIndex) {
+                        input.checked = true;
+                    }
+                    
+                    // Add event listener to store answer
+                    input.addEventListener('change', () => {
+                        userAnswers[index] = optionIndex;
+                    });
+                    
+                    const label = document.createElement('label');
+                    label.htmlFor = `question-${index}-option-${optionIndex}`;
+                    label.textContent = option;
+                    
+                    optionDiv.appendChild(input);
+                    optionDiv.appendChild(label);
+                    optionsDiv.appendChild(optionDiv);
+                });
+                
+                questionDiv.appendChild(optionsDiv);
+                testContainer.appendChild(questionDiv);
             });
+        }
+
+        // Update the timer display
+        function updateTimer() {
+            if (testSubmitted) return;
             
-            const totalScore = kanjiScore + grammarScore;
+            timeLeft--;
             
-            // Display results
-            document.getElementById('total-score').textContent = `総合スコア: ${totalScore}/25`;
-            document.getElementById('kanji-score').textContent = `${kanjiScore}/15`;
-            document.getElementById('grammar-score').textContent = `${grammarScore}/10`;
-            
-            // Feedback
-            const feedback = document.getElementById('feedback');
-            if (totalScore >= 20) {
-                feedback.textContent = "優秀です！N5レベルの漢字と文法はよく理解できています。";
-            } else if (totalScore >= 15) {
-                feedback.textContent = "良い出来です！もう少し練習すれば完璧です。";
-            } else {
-                feedback.textContent = "もう少し勉強が必要です。基本をもう一度復習しましょう。";
+            if (timeLeft <= 0) {
+                timeLeft = 0;
+                submitTest();
             }
             
-            // Detailed results
-            const detailedResults = document.getElementById('detailed-results');
-            detailedResults.innerHTML = '<h3>問題ごとの解説</h3>';
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
             
-            currentQuestions.forEach((question, index) => {
+            timeDisplay.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+            
+            // Change color when time is running low
+            if (timeLeft <= 60) {
+                timeDisplay.style.color = 'var(--danger-color)';
+            } else if (timeLeft <= 180) {
+                timeDisplay.style.color = 'var(--warning-color)';
+            }
+        }
+
+        // Submit the test and show results
+        function submitTest() {
+            clearInterval(timerInterval);
+            testSubmitted = true;
+            
+            // Calculate score
+            let score = 0;
+            const feedbackItems = [];
+            
+            currentTest.forEach((question, index) => {
                 const userAnswer = userAnswers[index];
-                const isCorrect = userAnswer !== null && question.options[userAnswer].correct;
+                const isCorrect = userAnswer === question.answer;
                 
-                const resultItem = document.createElement('div');
-                resultItem.className = 'question-container';
-                resultItem.innerHTML = `
-                    <div class="question">${index + 1}. ${question.question}</div>
-                    <div>あなたの答え: ${userAnswer !== null ? question.options[userAnswer].text : '未回答'}</div>
-                    <div style="color: ${isCorrect ? '#2ecc71' : '#e74c3c'}; font-weight: bold;">
-                        ${isCorrect ? '正解' : '不正解'}
-                    </div>
-                    <div class="explanation" style="display: none;">${question.explanation}</div>
-                    <button onclick="this.previousElementSibling.style.display='block'; this.style.display='none'">
-                        解説を見る
-                    </button>
-                `;
-                detailedResults.appendChild(resultItem);
+                if (isCorrect) {
+                    score++;
+                }
+                
+                // Create feedback item
+                const feedbackItem = document.createElement('div');
+                feedbackItem.className = `feedback-item ${isCorrect ? 'correct' : 'incorrect'}`;
+                
+                const questionText = document.createElement('div');
+                questionText.innerHTML = `<strong>Question ${index + 1}:</strong> ${question.question}`;
+                feedbackItem.appendChild(questionText);
+                
+                const userAnswerText = document.createElement('div');
+                userAnswerText.innerHTML = `<strong>Your answer:</strong> ${userAnswer !== undefined ? question.options[userAnswer] : 'Not answered'}`;
+                feedbackItem.appendChild(userAnswerText);
+                
+                const correctAnswerText = document.createElement('div');
+                correctAnswerText.innerHTML = `<strong>Correct answer:</strong> ${question.options[question.answer]}`;
+                feedbackItem.appendChild(correctAnswerText);
+                
+                const explanationText = document.createElement('div');
+                explanationText.innerHTML = `<strong>Explanation:</strong> ${question.explanation}`;
+                feedbackItem.appendChild(explanationText);
+                
+                feedbackItems.push(feedbackItem);
+            });
+            
+            // Display results
+            finalScoreSpan.textContent = score;
+            
+            // Set result message based on score
+            if (score >= 28) {
+                resultMessage.textContent = "Excellent! You have a strong understanding of JLPT N5 Kanji and Grammar.";
+            } else if (score >= 23) {
+                resultMessage.textContent = "Good job! You're well on your way to mastering JLPT N5 level.";
+            } else if (score >= 19) {
+                resultMessage.textContent = "Not bad! With a bit more practice, you'll be ready for the JLPT N5.";
+            } else {
+                resultMessage.textContent = "Keep practicing! Review the N5 Kanji and Grammar points to improve.";
+            }
+            
+            // Add feedback items
+            feedbackDiv.innerHTML = '';
+            feedbackItems.forEach(item => {
+                feedbackDiv.appendChild(item);
             });
             
             // Show results
-            document.getElementById('test-area').style.display = 'none';
-            document.getElementById('submit-btn').style.display = 'none';
-            document.getElementById('result').style.display = 'block';
+            submitBtn.style.display = 'none';
+            resultsDiv.style.display = 'block';
+            
+            // Scroll to results
+            resultsDiv.scrollIntoView({ behavior: 'smooth' });
         }
 
-        // Restart test
-        function restartTest() {
-            initTest();
-        }
+        // Event listeners
+        submitBtn.addEventListener('click', submitTest);
+        retryBtn.addEventListener('click', initTest);
 
-        // Initialize
-        window.onload = initTest;
+        // Initialize the test when the page loads
+        window.addEventListener('load', initTest);
     </script>
 </body>
 </html>
